@@ -100,7 +100,10 @@ class FXfamily(object):
         self.fraction_bits = n_bits         # Bits to right of binary point
         self.integer_bits = n_intbits       # Bits to left of binary point (including sign)
         self.scale = 1 << n_bits
-        self._roundup = 1 << (n_bits - 1)
+        if n_bits == 0:
+            self._roundup = 1
+        else:
+            self._roundup = 1 << (n_bits - 1)
 
         try:
             thresh = 1 << (n_bits + n_intbits - 1)
@@ -295,7 +298,7 @@ class FXnum(object):
             self.scaledval = converter(val.family, val.scaledval)
         except AttributeError:
             self.scaledval = kwargs.get('scaled_value',
-                                        int(val * family.scale))
+                                        int(round(val * family.scale)))
         self.family.validate(self.scaledval)
 
     @classmethod
